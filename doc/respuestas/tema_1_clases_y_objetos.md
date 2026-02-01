@@ -93,10 +93,49 @@ Esta característica no existe en C, donde cada función debe tener un nombre ú
 
 ### Respuesta
 
+A continuación se presenta un ejemplo mínimo de una clase `Punto` en Java con dos atributos y un método para calcular la distancia al origen:
+
+```java
+class Punto {
+    double x;
+    double y;
+    
+    double calculaDistanciaAOrigen() {
+        return Math.sqrt(x * x + y * y);
+    }
+}
+```
+
+La clase `Punto` define dos atributos de tipo `double` llamados `x` e `y` que representan las coordenadas del punto en un plano cartesiano. El método `calculaDistanciaAOrigen()` utiliza el teorema de Pitágoras para calcular la distancia euclidiana desde el punto hasta el origen (0,0), accediendo directamente a los atributos `x` e `y` del objeto. La función `Math.sqrt()` es equivalente a la función `sqrt()` de la biblioteca matemática de C.
+
+Para utilizar esta clase, es necesario crear una instancia (objeto) mediante el operador `new`, que reserva memoria en el heap y devuelve una referencia al objeto creado, similar a cómo `malloc()` devuelve un puntero en C. A continuación se muestra un ejemplo de uso:
+
+```java
+public class EjemploUso {
+    public static void main(String[] args) {
+        Punto p = new Punto();
+        p.x = 3.0;
+        p.y = 4.0;
+        
+        double distancia = p.calculaDistanciaAOrigen();
+        System.out.println("Distancia al origen: " + distancia);
+    }
+}
+```
+
+En este ejemplo se crea un objeto `p` de tipo `Punto`, se asignan valores a sus atributos `x` e `y`, y luego se invoca el método `calculaDistanciaAOrigen()` sobre ese objeto específico. El resultado, que debería ser 5.0, se imprime por consola. La sintaxis de punto (`p.x`, `p.calculaDistanciaAOrigen()`) es similar a cómo se accede a los miembros de un `struct` en C, pero aquí se está trabajando con referencias a objetos en lugar de con estructuras directas o punteros.
 
 ## 9. ¿Cuál es el punto de entrada en un programa en Java? ¿Qué es `static` y para qué vale? ¿Sólo se emplea para ese método `main`? ¿Para qué se combina con `final`?
 
 ### Respuesta
+
+El punto de entrada en un programa Java es el método `main`, que debe tener la siguiente firma exacta: `public static void main(String[] args)`. Este método es el primero que se ejecuta cuando se lanza una aplicación Java, similar a la función `main()` en C/C++. La máquina virtual de Java (JVM) busca este método específico para iniciar la ejecución del programa, y debe estar declarado dentro de alguna clase pública que coincida con el nombre del archivo.
+
+La palabra clave `static` indica que un método o atributo pertenece a la **clase en sí** y no a instancias particulares de esa clase. Esto significa que se puede acceder a elementos estáticos sin necesidad de crear un objeto, llamándolos directamente a través del nombre de la clase. Es análogo al concepto de variables y funciones globales en C, pero organizadas dentro del contexto de una clase. Por ejemplo, `Math.sqrt()` es un método estático porque no tiene sentido crear un objeto `Math` para calcular una raíz cuadrada; la operación no depende del estado de ningún objeto particular. El método `main` debe ser estático precisamente porque la JVM lo invoca sin crear ninguna instancia de la clase que lo contiene.
+
+El uso de `static` **no se limita al método `main`**; puede aplicarse a métodos y atributos en cualquier clase. Los métodos estáticos son útiles para operaciones utilitarias que no requieren acceso al estado de un objeto, como funciones matemáticas o conversiones. Los atributos estáticos (también llamados variables de clase) son compartidos por todas las instancias de una clase, existiendo una única copia en memoria independientemente de cuántos objetos se creen. Por ejemplo, un contador de instancias creadas podría ser un atributo estático.
+
+La combinación `static final` se utiliza para declarar **constantes** a nivel de clase. `final` indica que el valor no puede modificarse tras su inicialización, similar a `const` en C/C++. Cuando se combinan, se crea una constante global accesible desde cualquier lugar mediante el nombre de la clase, como `Math.PI` que es `public static final double PI = 3.141592653589793`. Esta combinación es muy común para definir valores configurables o constantes matemáticas que deben ser inmutables y compartidas por todo el programa.
 
 ## 10. Intenta ejecutar un poco de Java de forma básica, con los comandos `javac` y `java`. ¿Cómo podemos compilar el programa y ejecutarlo desde linea de comandos? ¿Java es compilado? ¿Qué es la **máquina virtual**? ¿Qué es el *byte-code* y los ficheros `.class`?
 
