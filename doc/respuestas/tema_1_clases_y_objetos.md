@@ -141,31 +141,193 @@ La combinación `static final` se utiliza para declarar **constantes** a nivel d
 
 ### Respuesta
 
+Voy a crear un programa Java básico y mostrarte cómo compilarlo y ejecutarlo desde línea de comandos.
+
+```java
+// Archivo: HolaMundo.java
+public class HolaMundo {
+    public static void main(String[] args) {
+        System.out.println("Hola desde Java!");
+    }
+}
+```
+
+Para compilar y ejecutar este programa, se utilizan dos comandos separados. Primero, `javac HolaMundo.java` compila el código fuente y genera un archivo `HolaMundo.class`. Luego, `java HolaMundo` (sin la extensión .class) ejecuta el programa. Es importante que el nombre de la clase pública coincida exactamente con el nombre del archivo, incluyendo mayúsculas y minúsculas.
+
+Java es un lenguaje **híbrido entre compilado e interpretado**. A diferencia de C/C++ que compilan directamente a código máquina específico del procesador, Java compila a un formato intermedio llamado **bytecode**. Este bytecode es un conjunto de instrucciones independientes de la plataforma que se almacena en los archivos `.class`. El bytecode no es directamente ejecutable por el procesador, sino que requiere una capa adicional de traducción.
+
+La **máquina virtual de Java (JVM)** es el software que ejecuta el bytecode, actuando como un intermediario entre el código compilado y el hardware real. La JVM interpreta o compila dinámicamente (JIT - Just In Time compilation) el bytecode a código máquina nativo durante la ejecución. Este diseño permite el lema "write once, run anywhere": el mismo archivo `.class` puede ejecutarse en Windows, Linux o cualquier sistema que tenga una JVM compatible, sin necesidad de recompilar. En contraste, un ejecutable compilado en C para Windows no funcionaría directamente en Linux.
+
+El proceso completo es: código fuente `.java` → compilador `javac` → bytecode en `.class` → JVM interpreta/compila → ejecución en el procesador. Esto añade una capa de abstracción que sacrifica algo de rendimiento respecto a lenguajes compilados nativamente, pero gana portabilidad, seguridad (la JVM puede verificar el bytecode antes de ejecutarlo) y características como la recolección automática de basura.
 
 ## 11. En el código anterior de la clase `Punto` ¿Qué es `new`? ¿Qué es un **constructor**? Pon un ejemplo de constructor en una clase `Empleado` que tenga DNI, nombre y apellidos
 
 ### Respuesta
 
+El operador `new` es el mecanismo en Java para crear objetos, reservando memoria en el heap para una nueva instancia de una clase. Es análogo a la función `malloc()` en C, pero más seguro y automatizado: `new` no solo reserva la memoria necesaria, sino que también inicializa el objeto llamando a su constructor y devuelve una referencia (similar a un puntero) al objeto creado. Sin `new`, no se pueden crear objetos en Java, solo se pueden declarar referencias que inicialmente valen `null`.
+
+Un **constructor** es un método especial que se ejecuta automáticamente cuando se crea un objeto con `new`, y su propósito es inicializar el estado del objeto recién creado. Los constructores tienen el mismo nombre que la clase, no especifican tipo de retorno (ni siquiera `void`), y pueden recibir parámetros para configurar el objeto durante su creación. Si no se define ningún constructor explícitamente, Java proporciona automáticamente un constructor sin parámetros que inicializa los atributos a valores por defecto (0 para números, `null` para referencias).
+
+A continuación se presenta un ejemplo de la clase `Empleado` con un constructor que inicializa sus tres atributos:
+
+```java
+class Empleado {
+    String dni;
+    String nombre;
+    String apellidos;
+    
+    Empleado(String dni, String nombre, String apellidos) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+    }
+}
+```
+
+Para usar esta clase, se crearía un objeto proporcionando los valores requeridos: `Empleado emp = new Empleado("12345678A", "Juan", "García López")`. La palabra clave `this` se utiliza dentro del constructor para diferenciar entre los parámetros y los atributos del objeto cuando tienen el mismo nombre, siendo `this.dni` el atributo del objeto y `dni` el parámetro recibido. Esto es necesario porque los parámetros "ocultan" temporalmente los atributos en el ámbito del constructor, similar al concepto de shadowing en C.
 
 ## 12. ¿Qué es la referencia `this`? ¿Se llama igual en todos los lenguajes? Pon un ejemplo del uso de `this` en la clase `Punto`
 
 ### Respuesta
 
+La referencia `this` es una palabra clave que dentro de un método o constructor representa una referencia al objeto actual sobre el cual se está ejecutando ese método. Es similar a un puntero implícito al propio objeto, permitiendo acceder explícitamente a sus atributos y métodos. `this` resulta especialmente útil cuando existe ambigüedad entre nombres de parámetros y atributos, o cuando se necesita pasar el objeto actual como argumento a otro método.
+
+La palabra clave `this` **no se llama igual en todos los lenguajes** orientados a objetos. En Python se utiliza convencionalmente `self` (aunque técnicamente puede tener cualquier nombre), en C++ también se usa `this` pero es un puntero explícito, en JavaScript se emplea `this` aunque con semántica diferente según el contexto, y en algunos lenguajes como Ruby se usa `@` como prefijo para las variables de instancia. La idea conceptual es la misma en todos: referenciar al objeto actual.
+
+A continuación se muestra un ejemplo del uso de `this` en la clase `Punto`, tanto en el constructor como en un método:
+
+```java
+class Punto {
+    double x;
+    double y;
+    
+    Punto(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    double calculaDistanciaAOrigen() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+    
+    double calculaDistanciaA(Punto otro) {
+        double dx = this.x - otro.x;
+        double dy = this.y - otro.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+}
+```
+
+En el constructor, `this.x` y `this.y` se refieren a los atributos del objeto, mientras que `x` e `y` son los parámetros recibidos. En el método `calculaDistanciaA()`, `this.x` representa la coordenada x del punto sobre el cual se invoca el método, diferenciándolo de `otro.x` que es la coordenada del punto pasado como parámetro. Aunque en `calculaDistanciaAOrigen()` el uso de `this` es opcional (podría escribirse simplemente `x` e `y`), utilizarlo explícitamente mejora la claridad del código al dejar claro que se están usando atributos del objeto.
 
 ## 13. Añade ahora otro nuevo método que se llame `distanciaA`, que reciba un `Punto` como parámetro y calcule la distancia entre `this` y el punto proporcionado
 
 ### Respuesta
 
+A continuación se presenta la clase `Punto` completa con el nuevo método `distanciaA` que calcula la distancia entre dos puntos:
+
+```java
+class Punto {
+    double x;
+    double y;
+    
+    double calculaDistanciaAOrigen() {
+        return Math.sqrt(x * x + y * y);
+    }
+    
+    double distanciaA(Punto otro) {
+        double dx = this.x - otro.x;
+        double dy = this.y - otro.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+}
+```
+
+El método `distanciaA` recibe como parámetro otro objeto de tipo `Punto` y calcula la distancia euclidiana entre el punto actual (`this`) y el punto proporcionado (`otro`). La fórmula utiliza el teorema de Pitágoras calculando primero las diferencias en cada coordenada: `dx` representa la distancia horizontal y `dy` la distancia vertical entre ambos puntos.
+
+En este método, `this.x` y `this.y` se refieren a las coordenadas del punto sobre el cual se invoca el método, mientras que `otro.x` y `otro.y` son las coordenadas del punto pasado como argumento. Por ejemplo, si se tiene `p1.distanciaA(p2)`, dentro del método `this` representa a `p1` y `otro` representa a `p2`. Un ejemplo de uso sería:
+
+```java
+Punto p1 = new Punto();
+p1.x = 0.0;
+p1.y = 0.0;
+
+Punto p2 = new Punto();
+p2.x = 3.0;
+p2.y = 4.0;
+
+double dist = p1.distanciaA(p2);  // Resultado: 5.0
+```
 
 ## 14. El paso del `Punto` como parámetro a un método, es **por copia** o **por referencia**, es decir, si se cambia el valor de algún atributo del punto pasado como parámetro, dichos cambios afectan al objeto fuera del método? ¿Qué ocurre si en vez de un `Punto`, se recibiese un entero (`int`) y dicho entero se modificase dentro de la función? 
 
 ### Respuesta
 
+En Java, el paso de parámetros siempre es **por valor**, pero es crucial entender qué se está copiando. Para objetos como `Punto`, lo que se pasa es una **copia de la referencia** (similar a copiar un puntero en C), no una copia del objeto completo. Esto significa que si dentro del método se modifican los atributos del objeto referenciado mediante esa referencia, **los cambios sí afectan al objeto original** fuera del método, porque tanto el parámetro como la variable externa apuntan al mismo objeto en memoria.
+
+```java
+void modificaPunto(Punto p) {
+    p.x = 100.0;  // Esto SÍ modifica el objeto original
+    p.y = 200.0;  // Esto SÍ modifica el objeto original
+}
+
+// Uso:
+Punto miPunto = new Punto();
+miPunto.x = 5.0;
+miPunto.y = 10.0;
+modificaPunto(miPunto);
+// Ahora miPunto.x vale 100.0 y miPunto.y vale 200.0
+```
+
+Sin embargo, si se intenta reasignar completamente el parámetro a un nuevo objeto con `p = new Punto()`, este cambio **no afecta** a la variable original porque solo se está modificando la copia local de la referencia, no la referencia externa. Es equivalente a modificar una copia de un puntero en C: se puede seguir el puntero y modificar lo que apunta, pero cambiar el puntero mismo no afecta al puntero original.
+
+Para tipos primitivos como `int`, el comportamiento es diferente. Los tipos primitivos se pasan **por valor puro**: se copia el valor numérico completo. Cualquier modificación del parámetro dentro del método **no afecta** a la variable original fuera del método:
+
+```java
+void modificaEntero(int n) {
+    n = 999;  // Esto NO afecta al valor original
+}
+
+// Uso:
+int numero = 42;
+modificaEntero(numero);
+// numero sigue valiendo 42
+```
+
+En resumen: para objetos, se puede modificar su contenido interno a través del parámetro (porque se comparte la misma dirección de memoria), pero para tipos primitivos, las modificaciones son completamente locales al método. Este comportamiento es consistente con C cuando se pasan estructuras por puntero (se puede modificar el contenido) versus pasar valores escalares directamente (no se puede modificar el original).
 
 ## 15. ¿Qué es el método `toString()` en Java? ¿Existe en otros lenguajes? Pon un ejemplo de `toString()` en la clase `Punto` en Java
 
 ### Respuesta
 
+El método `toString()` es un método especial en Java que devuelve una representación en forma de cadena de texto (`String`) de un objeto. Este método se invoca automáticamente cuando se intenta imprimir un objeto con `System.out.println()`, cuando se concatena un objeto con una cadena usando el operador `+`, o cuando se necesita convertir explícitamente un objeto a texto. Si no se define un `toString()` personalizado, Java utiliza una implementación por defecto que muestra el nombre de la clase seguido de un código hash en formato hexadecimal, algo poco informativo como `Punto@15db9742`.
+
+Este concepto **existe en otros lenguajes orientados a objetos** aunque con nombres diferentes. En Python se llama `__str__()` o `__repr__()`, en C# se llama `ToString()` (con mayúscula inicial), en JavaScript es `toString()`, y en Ruby es `to_s`. La idea subyacente es la misma: proporcionar una representación textual legible del objeto que sea útil para depuración, logging o presentación al usuario.
+
+A continuación se muestra un ejemplo de `toString()` implementado en la clase `Punto`:
+
+```java
+class Punto {
+    double x;
+    double y;
+    
+    double calculaDistanciaAOrigen() {
+        return Math.sqrt(x * x + y * y);
+    }
+    
+    double distanciaA(Punto otro) {
+        double dx = this.x - otro.x;
+        double dy = this.y - otro.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    public String toString() {
+        return "Punto(" + x + ", " + y + ")";
+    }
+}
+```
+
+Con este método definido, cuando se ejecuta `System.out.println(miPunto)` donde `miPunto` tiene coordenadas (3.0, 4.0), la salida será `Punto(3.0, 4.0)` en lugar del código hash críptico. El método debe declararse como `public` y devolver un tipo `String`. La anotación `@Override` (opcional pero recomendada) indica que se está sobrescribiendo un método heredado de la clase base `Object`, concepto que se verá al estudiar herencia.
 
 ## 16. Reflexiona: ¿una clase es como un `struct` en C? ¿Qué le falta al `struct` para ser como una clase y las variables de ese tipo ser instancias?
 
