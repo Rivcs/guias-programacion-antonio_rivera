@@ -334,6 +334,13 @@ Con este método definido, cuando se ejecuta `System.out.println(miPunto)` donde
 
 ### Respuesta
 
+Una clase en Java tiene similitudes con un `struct` en C en el sentido de que ambos permiten agrupar datos relacionados bajo un mismo tipo definido por el programador. Ambos definen una plantilla que especifica qué campos o atributos contendrá cada variable de ese tipo. Sin embargo, un `struct` en C es fundamentalmente una estructura de datos pasiva que solo agrupa variables, mientras que una clase es una entidad más completa que combina datos y comportamiento en una unidad cohesiva.
+
+A un `struct` de C le faltan varios elementos fundamentales para ser equivalente a una clase. Primero, **no tiene métodos asociados**: las funciones que operan sobre un `struct` se definen externamente y reciben la estructura como parámetro explícito, en lugar de estar intrínsecamente vinculadas al tipo. Segundo, **carece de constructores**: no existe un mecanismo automático de inicialización cuando se declara una variable del tipo `struct`, siendo responsabilidad del programador inicializar manualmente cada campo o crear funciones de inicialización por convención. Tercero, **no tiene control de visibilidad**: todos los campos son públicos y accesibles desde cualquier parte del código, imposibilitando la encapsulación que permite ocultar detalles de implementación.
+
+Además, los `struct` de C no soportan mecanismos de POO como **herencia** (extender una estructura existente añadiendo nuevos campos y comportamientos), **polimorfismo** (diferentes tipos respondiendo de formas distintas a la misma interfaz), ni **destructores automáticos** que se ejecuten al terminar el ciclo de vida de la variable. Tampoco gestionan automáticamente la memoria dinámica ni proporcionan recolección de basura. En C se trabaja directamente con valores de estructura en la pila o manualmente con punteros a memoria dinámica, mientras que en Java las variables de tipo clase son automáticamente referencias a objetos gestionados en el heap.
+
+C++ evolucionó precisamente añadiendo estas capacidades a los `struct`: en C++ pueden tener métodos, constructores, destructores, herencia y modificadores de acceso, siendo funcionalmente equivalentes a las `class` (con la única diferencia de que los miembros son públicos por defecto en `struct` y privados en `class`). Esto demuestra cómo la POO extiende el concepto de agrupación de datos hacia una integración completa de datos y comportamiento con mecanismos adicionales de abstracción y reutilización.
 
 ## 17. Quitemos un poco de magia a todo esto: ¿Como se podría “emular”, con `struct` en C, la clase `Punto`, con su función para calcular la distancia al origen? ¿Qué ha pasado con `this`?
 
