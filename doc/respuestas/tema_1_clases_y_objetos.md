@@ -331,7 +331,6 @@ Con este método definido, cuando se ejecuta `System.out.println(miPunto)` donde
 
 ## 16. Reflexiona: ¿una clase es como un `struct` en C? ¿Qué le falta al `struct` para ser como una clase y las variables de ese tipo ser instancias?
 
-
 ### Respuesta
 
 Una clase en Java tiene similitudes con un `struct` en C en el sentido de que ambos permiten agrupar datos relacionados bajo un mismo tipo definido por el programador. Ambos definen una plantilla que especifica qué campos o atributos contendrá cada variable de ese tipo. Sin embargo, un `struct` en C es fundamentalmente una estructura de datos pasiva que solo agrupa variables, mientras que una clase es una entidad más completa que combina datos y comportamiento en una unidad cohesiva.
@@ -345,3 +344,42 @@ C++ evolucionó precisamente añadiendo estas capacidades a los `struct`: en C++
 ## 17. Quitemos un poco de magia a todo esto: ¿Como se podría “emular”, con `struct` en C, la clase `Punto`, con su función para calcular la distancia al origen? ¿Qué ha pasado con `this`?
 
 ### Respuesta
+
+Para emular la clase `Punto` en C usando estructuras, es necesario separar los datos del comportamiento. La estructura contendrá solo los atributos, mientras que las funciones operarán sobre esa estructura recibiéndola como parámetro explícito. A continuación se muestra cómo se implementaría:
+
+```c
+#include <math.h>
+#include <stdio.h>
+
+struct Punto {
+    double x;
+    double y;
+};
+
+double calculaDistanciaAOrigen(struct Punto* p) {
+    return sqrt(p->x * p->x + p->y * p->y);
+}
+
+double distanciaA(struct Punto* p1, struct Punto* p2) {
+    double dx = p1->x - p2->x;
+    double dy = p1->y - p2->y;
+    return sqrt(dx * dx + dy * dy);
+}
+
+int main() {
+    struct Punto miPunto;
+    miPunto.x = 3.0;
+    miPunto.y = 4.0;
+    
+    double dist = calculaDistanciaAOrigen(&miPunto);
+    printf("Distancia al origen: %f\n", dist);
+    
+    return 0;
+}
+```
+
+La diferencia fundamental es que en C las funciones están **desacopladas** de la estructura: no hay una asociación sintáctica entre `struct Punto` y las funciones que operan sobre ella. Las funciones reciben explícitamente un puntero a la estructura como primer parámetro, que debe pasarse manualmente en cada llamada. En Java, la sintaxis `miPunto.calculaDistanciaAOrigen()` oculta este detalle, pero internamente es equivalente a pasar el objeto como parámetro implícito.
+
+**¿Qué ha pasado con `this`?** En la versión de C, `this` se ha convertido en el parámetro explícito `p` (o `p1` en el caso de `distanciaA`). Mientras que en Java `this` es una referencia implícita automáticamente disponible dentro de cualquier método, en C ese "puntero al objeto actual" debe declararse explícitamente como parámetro y pasarse en cada llamada. Por ejemplo, `p1.distanciaA(p2)` en Java se traduce a `distanciaA(&p1, &p2)` en C, donde `&p1` se convierte en lo que sería `this` dentro de la función.
+
+Esta comparación revela que la POO no introduce magia incomprensible, sino que proporciona azúcar sintáctico y abstracciones que hacen el código más intuitivo y mantenible. Lo que en Java es implícito y automático (`this`, la asociación método-clase, la gestión de memoria), en C debe gestionarse manualmente, pero el concepto subyacente es el mismo: funciones que operan sobre datos estructurados.
