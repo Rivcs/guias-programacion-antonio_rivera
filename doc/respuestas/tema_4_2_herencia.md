@@ -12,8 +12,8 @@ Por favor, escribe en impersonal las respuestas.
 </prompt>
 ----
 -->
-# Tema 4.2. Herencia
 
+# Tema 4.2. Herencia
 
 ## 1. En orientación a objetos, ¿qué es la **herencia** y su relación con "A es-un B"?. Explica las dos implicaciones principales: (1) **compatibilidad de tipos** y (2) **herencia de estado y comportamiento**. Pon un ejemplo en Java muy sencillo, donde un `Soldado` tiene un `nombre` (privado) y un método `saludar()` que muestra su nombre. Hay dos subtipos: un `Artillero`, que es capaz de disparar cohetes y un `Zapador` que pone minas, ambos heredan el atributo nombre y la capacidad de saludar. Además, y de forma específica, el artillero tiene un número de cohetes y el zapador un número de minas, accesibles mediante "getters" específicos. Respecto a la compatibilidad de tipos, aprovechémosla: crea un array de `Soldado`, mete varios de distinto tipo (son todos compatibles con `Soldado`). Recórrela y que todos te saluden.
 
@@ -88,8 +88,7 @@ public class Main {
 }
 ```
 
-
-## 2. Al crear los soldados concretos, ¿cuántos constructores se ejecutan y en qué orden? ¿Qué significa `super` dentro de un constructor? Si la clase base no tiene visible el constructor sin parámetros, ¿debo llamar a `super` siempre? 
+## 2. Al crear los soldados concretos, ¿cuántos constructores se ejecutan y en qué orden? ¿Qué significa `super` dentro de un constructor? Si la clase base no tiene visible el constructor sin parámetros, ¿debo llamar a `super` siempre?
 
 ### Respuesta
 
@@ -98,7 +97,6 @@ Cuando se crea un objeto de una subclase, se ejecutan al menos dos constructores
 La llamada `super(...)` dentro de un constructor es la forma de invocar explícitamente al constructor de la superclase. En el ejemplo, `super(nombre)` le pasa el nombre al constructor de `Soldado`, que es el encargado de inicializar el atributo `nombre`. Esta llamada debe ser siempre la primera instrucción del constructor de la subclase; no se puede colocar después de otras sentencias.
 
 Si la clase base no dispone de un constructor sin parámetros visible (porque se ha definido algún constructor con parámetros y no se ha escrito explícitamente el constructor vacío), entonces es obligatorio llamar a `super(...)` con los argumentos adecuados. En caso contrario, el compilador intentará insertar automáticamente `super()` sin argumentos y, al no encontrar un constructor sin parámetros en la superclase, producirá un error de compilación.
-
 
 ## 3. Respecto a los objetos de subclases en memoria, los atributos privados de la superclase, ¿forman parte de una instancia de la subclase en memoria? En caso afirmativo ¿implica que se puedan usar desde el código de la subclase? Explícalo con el ejemplo de `Soldado` y alguna de sus subclases.
 
@@ -109,7 +107,6 @@ Sí, los atributos privados de la superclase forman parte de la instancia de la 
 Sin embargo, que estén presentes en memoria no significa que sean accesibles desde el código de la subclase. El modificador `private` impide que cualquier clase distinta de la que declaró el atributo pueda referenciarlo directamente. Así, dentro del código de `Artillero` no se puede escribir `this.nombre` porque `nombre` es privado de `Soldado`. Para acceder a ese dato habría que hacerlo a través de métodos públicos o protegidos que `Soldado` ofrezca, como un getter.
 
 Esta distinción es importante porque separa dos conceptos: la **estructura física** del objeto (qué datos ocupa en memoria) y la **visibilidad** del código (qué se puede referenciar desde cada clase). La herencia aporta estructura, pero la encapsulación sigue controlando el acceso. Gracias a esto, la superclase puede cambiar la forma en que gestiona sus atributos internos sin que las subclases se vean afectadas, siempre que mantenga su interfaz pública.
-
 
 ## 4. ¿Qué implica en términos de **extensibilidad** de código el hecho de que sean compatibles a nivel de tipos? Ilustra esto añadiendo un nuevo tipo de `Soldado` y demostrando que el código para pedir el saludo a todos los soldados no se modifica.
 
@@ -135,7 +132,12 @@ public class Medico extends Soldado {
 	}
 
 	public void curar() {
-		System.out.println("Soldado curado.");
+		if (botiquines > 0) {
+			botiquines--;
+			System.out.println("Soldado curado.");
+		} else {
+			System.out.println("No quedan botiquines.");
+		}
 	}
 }
 
@@ -154,7 +156,6 @@ public class Main {
 	}
 }
 ```
-
 
 ## 5. En Java, cuando trabajo con referencias y herencia. ¿Puedo tener una referencia del supertipo que apunte a objetos reales de un subtipo? ¿Puedo invocar con la referencia del supertipo a métodos públicos del subtipo? ¿En qué consiste el **"upcasting"** y el **"downcasting"**? ¿Qué es el `instanceof`? Pon un ejemplo de recorrido de un array de `Soldado`, comprobando que, si el objeto real es un `Artillero`, solicite el número de cohetes que tiene y los imprima.
 
@@ -178,15 +179,13 @@ public class Main {
 		for (Soldado soldado : peloton) {
 			soldado.saludar();
 
-			if (soldado instanceof Artillero) {
-				Artillero artillero = (Artillero) soldado;
+			if (soldado instanceof Artillero artillero) { // Versión moderna de downcasting (Java +16)
 				System.out.println("  Cohetes: " + artillero.getCohetes());
 			}
 		}
 	}
 }
 ```
-
 
 ## 6. Respecto a la ocultación de información y herencia, ¿qué significa acceso **"protegido"** de métodos y/o atributos? ¿Cómo se implementa en Java? Pon un ejemplo de uso de en la clase `Soldado` para que su nombre sea protegido y pueda usarse en el método de poner bombas del `Zapador`.
 
@@ -230,7 +229,6 @@ public class Zapador extends Soldado {
 }
 ```
 
-
 ## 7. En los lenguajes orientados a objetos ¿hay una **clase base** para todos los objetos? ¿Ocurre en todos los lenguajes? ¿Qué ocurre en Java?
 
 ### Respuesta
@@ -240,7 +238,6 @@ En muchos lenguajes orientados a objetos existe una clase raíz de la que hereda
 En Java sí existe esa clase base universal y se llama `Object`. Toda clase que no declare explícitamente `extends` de otra clase hereda automáticamente de `Object`. Esto significa que cualquier objeto en Java, sin excepción, es compatible con el tipo `Object`. Por ejemplo, se puede declarar un array de tipo `Object[]` y almacenar en él cualquier tipo de objeto.
 
 `Object` proporciona un conjunto de métodos que todas las clases heredan, como `toString()` (que devuelve una representación en texto del objeto), `equals(Object)` (que permite comparar dos objetos) y `hashCode()` (que devuelve un valor hash). Estos métodos tienen implementaciones por defecto que pueden ser suficientes o que las subclases pueden redefinir para adaptarlos a sus necesidades concretas. Gracias a esta clase raíz, Java garantiza un contrato mínimo común para todos los objetos del sistema.
-
 
 ## 8. ¿Qué es la **"herencia múltiple"**? ¿Existe en Java herencia múltiple?
 
@@ -252,8 +249,7 @@ El problema principal de la herencia múltiple es el llamado "problema del diama
 
 En Java no existe herencia múltiple de clases. Una clase solo puede extender a una única superclase mediante `extends`. Sin embargo, Java permite que una clase implemente múltiples interfaces (con `implements`), lo cual ofrece una forma limitada de herencia múltiple. Las interfaces definen contratos (métodos que la clase debe implementar) pero tradicionalmente no aportan estado ni implementación completa, lo que evita los problemas del diamante. A partir de Java 8, las interfaces pueden incluir métodos con implementación por defecto (`default`), pero el lenguaje establece reglas claras de resolución de conflictos si dos interfaces ofrecen el mismo método.
 
-
-## 9. Las excepciones en los lenguajes orientados a objetos son objetos. Por tanto, se pueden crear excepciones personalizadas. Pon un ejemplo en Java de una excepción personalizada (`UsuarioNoEncontradoException`), que sea *no controlada* y que además este compuesto con un `Usuario`, para saber qué `Usuario` dio el problema. Permite además que se pueda incluir la causa, es decir, sobrecarga el constructor para tener una versión que permita añadir la causa subyacente. 
+## 9. Las excepciones en los lenguajes orientados a objetos son objetos. Por tanto, se pueden crear excepciones personalizadas. Pon un ejemplo en Java de una excepción personalizada (`UsuarioNoEncontradoException`), que sea _no controlada_ y que además este compuesto con un `Usuario`, para saber qué `Usuario` dio el problema. Permite además que se pueda incluir la causa, es decir, sobrecarga el constructor para tener una versión que permita añadir la causa subyacente.
 
 ### Respuesta
 
@@ -311,7 +307,6 @@ public class Main {
 }
 ```
 
-
 ## 10. Herencia vs. Composición. Se dice que no se debe emplear herencia simplemente por reutilizar código, es decir, que si quiero reutilizar código simplemente, no debo pensar en herencia como primera opción ¿por qué?
 
 ### Respuesta
@@ -322,8 +317,7 @@ Por ejemplo, si se tuviera una clase `Utilidades` con varios métodos de cálcul
 
 La composición es más adecuada para reutilizar código sin establecer una relación de tipos: basta con tener una referencia a un objeto de la clase que ofrece la funcionalidad y delegar en él. De este modo, se reutiliza el comportamiento sin asumir la identidad del otro tipo ni exponerse a los cambios internos de una superclase que no representa lo que la clase realmente es.
 
-
-## 11. Herencia vs. Composición. Se dice que se debe *"favorecer la composición frente a la herencia"*, ¿por qué?
+## 11. Herencia vs. Composición. Se dice que se debe _"favorecer la composición frente a la herencia"_, ¿por qué?
 
 ### Respuesta
 
@@ -333,8 +327,7 @@ La herencia produce un acoplamiento fuerte entre la subclase y la superclase. Cu
 
 Esto no significa que la herencia sea mala ni que deba evitarse siempre. La herencia tiene su lugar cuando la relación "es-un" es genuina y se desea la compatibilidad de tipos. Lo que se busca al favorecer la composición es que, ante la duda, se opte por la alternativa que genera menos acoplamiento y ofrece mayor flexibilidad, recurriendo a la herencia solo cuando la relación entre los tipos lo justifique de forma clara.
 
-
-## 12. Herencia vs. Composición. Se dice que la *"herencia rompe la encapsulación"*, ¿a qué se refiere esto?
+## 12. Herencia vs. Composición. Se dice que la _"herencia rompe la encapsulación"_, ¿a qué se refiere esto?
 
 ### Respuesta
 
@@ -343,7 +336,6 @@ Cuando se dice que la herencia rompe la encapsulación, se hace referencia a que
 Por ejemplo, si una superclase tiene un método `agregar()` que internamente llama a otro método `validar()`, y la subclase sobreescribe `validar()`, el comportamiento resultante depende de cómo estén conectados internamente esos dos métodos en la superclase. Si la superclase cambia y deja de llamar a `validar()` desde `agregar()`, la subclase se rompe sin explicación aparente. La subclase necesitaba conocer un detalle de implementación de la superclase para funcionar correctamente.
 
 Con composición, este problema no se da de la misma forma. El objeto que se contiene se usa a través de su interfaz pública, y su implementación interna queda oculta. No hay dependencia de cómo están conectados internamente los métodos del objeto contenido, porque simplemente se llama a sus métodos públicos y se trabaja con sus resultados. Por eso se dice que la composición respeta mejor la encapsulación que la herencia.
-
 
 ## 13. Pongamos un ejemplo de dos alternativas para lo mismo. Tenemos un `Estudiante` y un `Trabajador`, ambos tienen datos en común: el DNI y el nombre. Modelemos esto de dos formas: uno por herencia, con una superclase `Persona`, y otro con composición, con una clase `DatosPersonales`. Se debe recibir una instancia de `DatosPersonales` en el constructor de la clase `Estudiante` y `Trabajador`.
 
